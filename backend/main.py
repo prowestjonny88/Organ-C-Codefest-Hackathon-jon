@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+# ROUTES
 from routes.iot import router as iot_router
 from routes.forecast import router as forecast_router
 from routes.anomaly import router as anomaly_router
@@ -11,7 +13,13 @@ from routes.stores import router as stores_router
 from routes.recommendations import router as recommendations_router
 from routes.schemas import HealthResponse
 
-# API Version prefix
+# DATABASE
+from database import Base, engine
+
+# IMPORTANT: import models BEFORE create_all()
+from models import Alert, AnomalyLog, ClusterLog, RiskLog
+
+
 API_V1_PREFIX = "/api/v1"
 
 app = FastAPI(
@@ -21,35 +29,46 @@ app = FastAPI(
     ## Track 1: Intelligent Predictive Analytics for Enterprise Operations
     
     This API provides AI-powered analytics for retail operations including:
-    
-    * 📈 **Forecasting** - Predict future sales using Prophet
-    * 🔍 **Anomaly Detection** - Identify unusual patterns with Isolation Forest
-    * 📊 **KPI Dashboard** - Key performance metrics
-    * ⚠️ **Risk Assessment** - Evaluate operational risks
-    * 🚨 **Alerts** - Actionable warnings
-    * 💡 **Recommendations** - AI-powered optimization suggestions
-    * 🏪 **Store Analytics** - Store-level insights
+
+    * 📈 Forecasting
+    * 🔍 Anomaly Detection
+    * 📊 KPI Dashboard
+    * ⚠️ Risk Assessment
+    * 🚨 Alerts
+    * 💡 Recommendations
+    * 🏪 Store Analytics
     """
 )
 
+
 # ============================================
-# MIDDLEWARE (must be before routes!)
+# MIDDLEWARE (must be before routes)
 # ============================================
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Restrict in production
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+
 # ============================================
-# HEALTH CHECK (no version prefix)
+# STARTUP EVENT → Create tables on Render
+# ============================================
+@app.on_event("startup")
+def startup():
+    print("🚀 Creating database tables (if not exist)...")
+    Base.metadata.create_all(bind=engine)
+
+
+# ============================================
+# HEALTH CHECK
 # ============================================
 @app.get("/health", response_model=HealthResponse, tags=["Health"])
 def health_check():
-    """Check if the API is running"""
     return {"status": "ok"}
+
 
 # ============================================
 # API v1 ROUTES
