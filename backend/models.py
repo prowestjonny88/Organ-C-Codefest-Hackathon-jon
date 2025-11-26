@@ -2,7 +2,6 @@ from sqlalchemy import Column, Integer, String, Float, DateTime, JSON
 from sqlalchemy.sql import func
 from database import Base
 
-
 # ============================
 # ALERTS TABLE
 # ============================
@@ -27,7 +26,10 @@ class AnomalyLog(Base):
     timestamp = Column(String)
     value = Column(Float)
     score = Column(Float)
-    is_anomaly = Column(Integer)  # 1 = normal, -1 = anomaly
+
+    # IMPORTANT — Render DB expects integer, not boolean
+    is_anomaly = Column(Integer)      # 0 = normal, 1 = anomaly
+
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 
@@ -41,7 +43,7 @@ class ClusterLog(Base):
     store = Column(Integer)
     dept = Column(Integer)
     cluster = Column(Integer)
-    features = Column(JSON)  # store all IoT input
+    features = Column(JSON)  # store all IoT input as JSON
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 
@@ -56,6 +58,9 @@ class RiskLog(Base):
     dept = Column(Integer)
     risk_score = Column(Float)
     risk_level = Column(String)
+
+    # Keep integers to match DB schema
     anomaly = Column(Integer)
     cluster = Column(Integer)
+
     created_at = Column(DateTime(timezone=True), server_default=func.now())

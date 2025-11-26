@@ -1,18 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
-import logging
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
-
-# Import database and models for table creation
-from database import engine, Base
-from models import Alert, AnomalyLog, ClusterLog, RiskLog
-
+# ROUTES
 from routes.iot import router as iot_router
 from routes.forecast import router as forecast_router
 from routes.anomaly import router as anomaly_router
@@ -22,82 +11,69 @@ from routes.alerts import router as alerts_router
 from routes.cluster import router as cluster_router
 from routes.stores import router as stores_router
 from routes.recommendations import router as recommendations_router
-from routes.websocket import router as websocket_router
 from routes.schemas import HealthResponse
 
-# API Version prefix
+# DATABASE
+from database import Base, engine
+
+# IMPORTANT: import models BEFORE create_all()
+from models import Alert, AnomalyLog, ClusterLog, RiskLog
+
+
 API_V1_PREFIX = "/api/v1"
 
-
-# ============================================
-# STARTUP/SHUTDOWN EVENTS
-# ============================================
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """Handle startup and shutdown events"""
-    # Startup: Create database tables
-    logging.info("🚀 Starting up...")
-    Base.metadata.create_all(bind=engine)
-    logging.info("✅ Database tables created/verified")
-    
-    yield  # App runs here
-    
-    # Shutdown
-    logging.info("👋 Shutting down...")
-
-
 app = FastAPI(
-    lifespan=lifespan,
     title="Enterprise Predictive Analytics API",
     version="1.0.0",
     description="""
     ## Track 1: Intelligent Predictive Analytics for Enterprise Operations
     
     This API provides AI-powered analytics for retail operations including:
-    
-    * 📈 **Forecasting** - Predict future sales using Prophet
-    * 🔍 **Anomaly Detection** - Identify unusual patterns with Isolation Forest
-    * 📊 **KPI Dashboard** - Key performance metrics
-    * ⚠️ **Risk Assessment** - Evaluate operational risks
-    * 🚨 **Alerts** - Actionable warnings
-    * 💡 **Recommendations** - AI-powered optimization suggestions
-    * 🏪 **Store Analytics** - Store-level insights
-    * 🔌 **WebSocket** - Real-time IoT data streaming
-    
-    ### WebSocket Endpoints
-    - `ws://host/ws/alerts` - Real-time alerts and IoT updates
-    - `ws://host/ws/dashboard` - Dashboard data stream
+
+    * 📈 Forecasting
+    * 🔍 Anomaly Detection
+    * 📊 KPI Dashboard
+    * ⚠️ Risk Assessment
+    * 🚨 Alerts
+    * 💡 Recommendations
+    * 🏪 Store Analytics
     """
 )
 
+
 # ============================================
-# MIDDLEWARE (must be before routes!)
+# MIDDLEWARE (must be before routes)
 # ============================================
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Restrict in production
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+
 # ============================================
-# HEALTH CHECK (no version prefix)
+# STARTUP EVENT → Create tables on Render
+# ============================================
+@app.on_event("startup")
+def startup():
+    print("🚀 Creating database tables (if not exist)...")
+    Base.metadata.create_all(bind=engine)
+
+
+# ============================================
+# HEALTH CHECK
 # ============================================
 @app.get("/health", response_model=HealthResponse, tags=["Health"])
 def health_check():
-    """Check if the API is running"""
     return {"status": "ok"}
 
-# ============================================
-# WEBSOCKET ROUTES (no prefix - direct /ws/)
-# ============================================
-app.include_router(websocket_router, prefix="/ws", tags=["🔌 WebSocket"])
 
 # ============================================
 # API v1 ROUTES
 # ============================================
-app.include_router(iot_router, prefix=f"{API_V1_PREFIX}/iot", tags=["📡 IoT Ingestion"])
+app.include_router(iot_router, prefix=f"{API_V1_PREFIX}/iot", tags=["IoT Ingestion"])
 app.include_router(stores_router, prefix=f"{API_V1_PREFIX}/stores", tags=["Stores"])
 app.include_router(recommendations_router, prefix=f"{API_V1_PREFIX}/recommendations", tags=["Recommendations"])
 app.include_router(forecast_router, prefix=f"{API_V1_PREFIX}/forecast", tags=["Forecast"])
