@@ -11,6 +11,7 @@ from routes.alerts import router as alerts_router
 from routes.cluster import router as cluster_router
 from routes.stores import router as stores_router
 from routes.recommendations import router as recommendations_router
+from routes.websocket import router as websocket_router  # WebSocket routes
 from routes.schemas import HealthResponse
 
 # DATABASE
@@ -69,6 +70,11 @@ def startup():
 def health_check():
     return {"status": "ok"}
 
+
+# ============================================
+# WEBSOCKET ROUTES (no version prefix)
+# ============================================
+app.include_router(websocket_router, prefix="/ws", tags=["🔌 WebSocket"])
 
 # ============================================
 # API v1 ROUTES

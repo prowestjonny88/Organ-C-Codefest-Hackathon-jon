@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from database import SessionLocal
 from models import Alert, AnomalyLog, ClusterLog, RiskLog
 from ml.model import SalesModel
+from websocket_manager import manager  # WebSocket broadcasting
 import pandas as pd
 
 router = APIRouter()
@@ -30,7 +31,7 @@ class IoTInput(BaseModel):
 
 
 @router.post("/")
-def iot_ingest(data: IoTInput, db: Session = Depends(get_db)):
+async def iot_ingest(data: IoTInput, db: Session = Depends(get_db)):
 
     # Convert IoT input to dataframe
     df = pd.DataFrame([data.dict()])
@@ -106,6 +107,33 @@ def iot_ingest(data: IoTInput, db: Session = Depends(get_db)):
         ))
 
     db.commit()
+
+    # 🔌 Broadcast to WebSocket clients
+    await manager.broadcast_iot_update(
+        data={
+            "store": data.store,
+            "dept": data.dept,
+            "Weekly_Sales": data.Weekly_Sales,
+            "Temperature": data.Temperature,
+            "IsHoliday": data.IsHoliday
+        },
+        analysis_result={
+            "anomaly": anomaly_flag,
+            "anomaly_score": anomaly_score,
+            "cluster": cluster_id,
+            "risk_level": level,
+            "risk_score": score
+        }
+    )
+
+    # 🚨 Broadcast alert if HIGH risk
+    if level == "HIGH":
+        await manager.broadcast_alert(
+            store=data.store,
+            dept=data.dept,
+            message="⚠ High risk detected from IoT update",
+            risk_score=score
+        )
 
     return {
         "status": "success",
