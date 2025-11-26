@@ -107,7 +107,7 @@ export default function Dashboard() {
       setInventories(result.products);
       // choose first product as selected
       setSelectedProduct(result.products[0].productId);
-      setForecastDetails(generateForecastDetails(result.products[0].productId, 90));
+      setForecastDetails(generateForecastDetails(result.products[0].productId, 26));
       setMetrics(simpleMetricsFromInventories(result.products));
       setKpiMetrics(demoKPIMetrics()); // TODO: Calculate from sales data
       setDataLoaded(true);
@@ -153,7 +153,7 @@ export default function Dashboard() {
       // Produce forecast details using generateForecastDetails for each product
       const fDetails: ForecastDetail[] = [];
       for (const inv of invs) {
-        fDetails.push(...generateForecastDetails(inv.productId, 90));
+        fDetails.push(...generateForecastDetails(inv.productId, 26));
       }
       setForecastDetails(fDetails);
       setMetrics(simpleMetricsFromInventories(invs));
@@ -187,12 +187,13 @@ export default function Dashboard() {
 
   // Generate a small set of synthetic forecast data for a given product.
   // This is a fallback used when the user hasn't uploaded real data yet.
-  function generateForecastDetails(productId: string, days: number): ForecastDetail[] {
+  function generateForecastDetails(productId: string, weeks: number): ForecastDetail[] {
     const today = new Date();
     const base = 30 + (productId?.length || 0);
-    return Array.from({ length: days }).map((_, i) => {
+    // Generate weeks + 1 data points to show all week boundaries (start and end of each week)
+    return Array.from({ length: weeks + 1 }).map((_, i) => {
       const d = new Date(today);
-      d.setDate(today.getDate() - (days - i - 1));
+      d.setDate(today.getDate() + (i * 7)); // Weekly intervals: 0, 7, 14, 21, etc.
       const historical = Math.max(0, Math.round(base + Math.sin(i / 3) * 8 + (i % 7 === 0 ? 10 : 0)));
       const forecast = Math.round(historical * (1 + Math.cos(i / 7) * 0.03));
       const lower = Math.round(forecast * 0.9);
@@ -213,7 +214,7 @@ export default function Dashboard() {
 
   const handleProductSelect = (productId: string) => {
     setSelectedProduct(productId);
-    setForecastDetails(generateForecastDetails(productId, 90));
+    setForecastDetails(generateForecastDetails(productId, 26));
   };
 
   const handleApproveOrder = (productId: string, quantity: number) => {
@@ -358,7 +359,7 @@ export default function Dashboard() {
                   <input
                     type="range"
                     min="1"
-                    max="26"
+                    max="12"
                     value={forecastPeriods}
                     onChange={(e) => setForecastPeriods(Number(e.target.value))}
                     className="w-32"
@@ -369,7 +370,7 @@ export default function Dashboard() {
             <CardContent>
               <ResponsiveContainer width="100%" height={350}>
                 <LineChart
-                  data={displayForecast.slice(0, forecastPeriods)}
+                  data={displayForecast.slice(0, forecastPeriods + 1)}
                   margin={{ top: 5, right: 30, left: 0, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
