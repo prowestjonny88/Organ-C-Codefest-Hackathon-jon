@@ -3,7 +3,7 @@ import random
 import time
 from datetime import datetime
 
-BACKEND_URL = "https://organ-c-codefest-hackathon.onrender.com"
+BACKEND_URL = "https://organ-c-codefest-hackathon.onrender.com/api/v1/iot/"
 
 def generate_random_record():
     return {
@@ -28,9 +28,8 @@ def send_record():
     except Exception as e:
         print("Failed:", e)
 
-
 if __name__ == "__main__":
     print("IoT Simulator running... (Every 10 minutes)")
     while True:
         send_record()
-        time.sleep(600)  # 10 min = 600 seconds
+        time.sleep(600)

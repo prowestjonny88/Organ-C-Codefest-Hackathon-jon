@@ -32,9 +32,27 @@ class IoTInput(BaseModel):
 @router.post("/")
 def iot_ingest(data: IoTInput, db: Session = Depends(get_db)):
 
+    # Convert IoT input to dataframe
     df = pd.DataFrame([data.dict()])
 
-    # 1) anomaly
+    # 🔥 CRITICAL FIX — rename to match model training columns
+    df = df.rename(columns={
+        "store": "Store",
+        "dept": "Dept",
+        "IsHoliday": "IsHoliday",
+        "Weekly_Sales": "Weekly_Sales",
+        "Temperature": "Temperature",
+        "Fuel_Price": "Fuel_Price",
+        "CPI": "CPI",
+        "Unemployment": "Unemployment"
+    })
+
+    # Make sure types match training schema
+    df["Store"] = df["Store"].astype(int)
+    df["Dept"] = df["Dept"].astype(int)
+    df["IsHoliday"] = df["IsHoliday"].astype(int)
+
+    # 1) anomaly detection
     anomaly = model.detect_anomalies(df).iloc[0]
     anomaly_flag = int(anomaly["anomaly"])
     anomaly_score = float(anomaly["anomaly_score"])
@@ -46,8 +64,9 @@ def iot_ingest(data: IoTInput, db: Session = Depends(get_db)):
         is_anomaly=(anomaly_flag == -1)
     ))
 
-    # 2) cluster
+    # 2) clustering
     cluster_id = model.cluster(df)
+
     db.add(ClusterLog(
         store=data.store,
         dept=data.dept,
@@ -55,11 +74,14 @@ def iot_ingest(data: IoTInput, db: Session = Depends(get_db)):
         features=data.dict()
     ))
 
-    # 3) risk score
+    # 3) risk score calculation
     score = 0
-    if anomaly_flag == -1: score += 40
-    if abs(anomaly_score) > 0.15: score += 10
-    if cluster_id in [6, 7]: score += 20
+    if anomaly_flag == -1:
+        score += 40
+    if abs(anomaly_score) > 0.15:
+        score += 10
+    if cluster_id in [6, 7]:
+        score += 20
 
     level = "HIGH" if score >= 60 else "MEDIUM" if score >= 30 else "LOW"
 
@@ -73,7 +95,7 @@ def iot_ingest(data: IoTInput, db: Session = Depends(get_db)):
     )
     db.add(risk_row)
 
-    # 4) auto-alert if high risk
+    # 4) auto alert
     if level == "HIGH":
         db.add(Alert(
             store=data.store,
