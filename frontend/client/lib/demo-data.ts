@@ -57,16 +57,20 @@ export function demoInventories(): InventorySnapshot[] {
   ];
 }
 
-export function demoForecast(productId = "prod-001", days = 90): ForecastDetail[] {
+export function demoForecast(productId = "prod-001", periods = 90): ForecastDetail[] {
   const today = new Date();
-  const base = 30 + (productId?.length || 0);
-  return Array.from({ length: days }).map((_, i) => {
+  // Base around avg weekly sales (~16k) with realistic variance
+  const base = 15000 + (Math.abs(productId?.length || 0) * 200);
+  return Array.from({ length: periods }).map((_, i) => {
     const d = new Date(today);
-    d.setDate(today.getDate() - (days - i - 1));
-    const historical = Math.max(0, Math.round(base + Math.sin(i / 3) * 8 + (i % 7 === 0 ? 10 : 0)));
-    const forecast = Math.round(historical * (1 + Math.cos(i / 7) * 0.03));
-    const lower = Math.round(forecast * 0.9);
-    const upper = Math.round(forecast * 1.1);
+    d.setDate(today.getDate() - ((periods - i - 1) * 7)); // Weekly intervals ending today
+    // Seasonal pattern + weekly variance
+    const seasonalFactor = 1 + Math.sin(i / 8) * 0.15; // ±15% seasonal
+    const weeklyNoise = Math.sin(i / 3) * 1200 + (i % 4 === 0 ? 2500 : 0); // Holiday spikes
+    const historical = Math.max(0, Math.round(base * seasonalFactor + weeklyNoise));
+    const forecast = Math.round(historical * (1 + Math.cos(i / 5) * 0.05));
+    const lower = Math.round(forecast * 0.88);
+    const upper = Math.round(forecast * 1.12);
     const anomaly = Math.random() > 0.985;
     return {
       productId,

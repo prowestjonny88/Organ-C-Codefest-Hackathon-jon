@@ -446,7 +446,7 @@ export default function Dashboard() {
         <div className="fixed inset-0 grid-pattern opacity-20 pointer-events-none"></div>
         <div className="fixed inset-0 bg-gradient-to-b from-primary/5 via-transparent to-secondary/5 pointer-events-none"></div>
         
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
           {/* Real-Time Status Indicator */}
           {!dataLoaded && (
             <div className="mb-6 p-4 glass-card flex items-center gap-3 neon-border smooth-transition">
@@ -465,14 +465,14 @@ export default function Dashboard() {
           )}
           
           {/* KPI Overview Section - Backend Driven */}
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold mb-6 gradient-text">KPI Overview</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+          <section className="mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-8 gradient-text font-heading">KPI Overview</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
               <Card className="p-6 futuristic-card hover-lift">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Avg Weekly Sales</p>
-                    <p className="text-2xl font-bold mt-1 text-foreground">
+                    <p className="text-sm font-medium text-muted-foreground mb-1">Avg Weekly Sales</p>
+                    <p className="text-2xl font-semibold text-foreground">
                       ${displayKPIMetrics.avgWeeklySales.toLocaleString(undefined, { maximumFractionDigits: 2 })}
                     </p>
                   </div>
@@ -483,8 +483,8 @@ export default function Dashboard() {
               <Card className="p-6 futuristic-card hover-lift">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Max Sales</p>
-                    <p className="text-2xl font-bold mt-1 text-foreground">
+                    <p className="text-sm font-medium text-muted-foreground mb-1">Max Sales</p>
+                    <p className="text-2xl font-semibold text-foreground">
                       ${displayKPIMetrics.maxSales.toLocaleString(undefined, { maximumFractionDigits: 2 })}
                     </p>
                   </div>
@@ -495,8 +495,8 @@ export default function Dashboard() {
               <Card className="p-6 futuristic-card hover-lift">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Min Sales</p>
-                    <p className="text-2xl font-bold mt-1 text-foreground">
+                    <p className="text-sm font-medium text-muted-foreground mb-1">Min Sales</p>
+                    <p className="text-2xl font-semibold text-foreground">
                       ${displayKPIMetrics.minSales.toLocaleString(undefined, { maximumFractionDigits: 2 })}
                     </p>
                   </div>
@@ -507,8 +507,8 @@ export default function Dashboard() {
               <Card className="p-6 futuristic-card hover-lift">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Volatility</p>
-                    <p className="text-2xl font-bold mt-1 text-foreground">
+                    <p className="text-sm font-medium text-muted-foreground mb-1">Volatility</p>
+                    <p className="text-2xl font-semibold text-foreground">
                       ${displayKPIMetrics.volatility.toLocaleString(undefined, { maximumFractionDigits: 2 })}
                     </p>
                   </div>
@@ -519,8 +519,8 @@ export default function Dashboard() {
               <Card className="p-6 futuristic-card hover-lift">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Holiday Sales Avg</p>
-                    <p className="text-2xl font-bold mt-1 text-foreground">
+                    <p className="text-sm font-medium text-muted-foreground mb-1">Holiday Sales Avg</p>
+                    <p className="text-2xl font-semibold text-foreground">
                       ${displayKPIMetrics.holidaySalesAvg.toLocaleString(undefined, { maximumFractionDigits: 2 })}
                     </p>
                   </div>
@@ -528,16 +528,17 @@ export default function Dashboard() {
                 </div>
               </Card>
             </div>
-          </div>
+          </section>
 
           {/* Forecast Section */}
-          <Card className="mb-8 futuristic-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-xl">
+          <section className="mb-12">
+            <Card className="futuristic-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-2xl sm:text-3xl font-heading">
                 <TrendingUp className="w-5 h-5 text-primary neon-glow" />
                 <span className="gradient-text">Sales Forecast</span>
               </CardTitle>
-              <p className="text-sm text-foreground/60 mt-2">
+                        <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
                 Predictive sales forecast for upcoming periods
               </p>
               <div className="flex items-center gap-6 mt-4">
@@ -629,15 +630,17 @@ export default function Dashboard() {
               </ResponsiveContainer>
             </CardContent>
           </Card>
+          </section>
 
           {/* Anomaly Detection */}
-          <Card className="mb-8 futuristic-card">
+          <section className="mb-12">
+            <Card className="futuristic-card">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-xl">
+              <CardTitle className="flex items-center gap-2 text-2xl sm:text-3xl font-heading">
                 <AlertTriangle className="w-5 h-5 text-secondary neon-glow-secondary" />
                 <span className="gradient-text">Anomaly Detection</span>
               </CardTitle>
-              <p className="text-sm text-foreground/60 mt-2">
+                        <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
                 Identify outliers and unusual patterns before they escalate
               </p>
               </CardHeader>
@@ -827,15 +830,17 @@ export default function Dashboard() {
               )}
             </CardContent>
           </Card>
+          </section>
 
           {/* Risk Analysis Dashboard */}
-          <Card className="mb-8 futuristic-card">
+          <section className="mb-12">
+            <Card className="futuristic-card">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-xl">
+              <CardTitle className="flex items-center gap-2 text-2xl sm:text-3xl font-heading">
                 <AlertTriangle className="w-5 h-5 text-red-400" />
                 <span className="gradient-text">Risk Analysis</span>
               </CardTitle>
-              <p className="text-sm text-foreground/60 mt-2">
+                        <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
                 Scored by anomaly detection, cluster analysis, and risk factors
               </p>
             </CardHeader>
@@ -908,11 +913,13 @@ export default function Dashboard() {
               </div>
             </CardContent>
           </Card>
+          </section>
 
           {/* Real-Time Alerts & Anomalies */}
-          <Card className="mb-8 futuristic-card">
+          <section className="mb-12">
+            <Card className="futuristic-card">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-xl">
+              <CardTitle className="flex items-center gap-2 text-2xl sm:text-3xl font-heading">
                 <Zap className="w-5 h-5 text-accent neon-glow" />
                 <span className="gradient-text">Real-Time Alerts</span> {!dataLoaded && iotDataPoints.length > 0 && (
                   <span className="text-sm font-normal text-muted-foreground">
@@ -920,7 +927,7 @@ export default function Dashboard() {
                   </span>
                 )}
               </CardTitle>
-              <p className="text-sm text-foreground/60 mt-2">
+                        <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
                 {!dataLoaded 
                   ? "Live IoT data stream - Updates appear automatically as data arrives"
                   : "Instant notifications to keep you ahead of critical events"
@@ -1051,15 +1058,17 @@ export default function Dashboard() {
               </div>
             </CardContent>
           </Card>
+          </section>
 
           {/* Model Accuracy Section */}
-          <Card className="mb-8 futuristic-card">
+          <section className="mb-12">
+            <Card className="futuristic-card">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-xl">
+              <CardTitle className="flex items-center gap-2 text-2xl sm:text-3xl font-heading">
                 <BarChart3 className="w-5 h-5 text-primary neon-glow" />
                 <span className="gradient-text">Model Accuracy & Performance</span>
               </CardTitle>
-              <p className="text-sm text-foreground/60 mt-2">
+                        <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
                 Comparison of our trained model predictions vs actual Walmart sales data (3-month backtest)
               </p>
             </CardHeader>
@@ -1414,15 +1423,17 @@ export default function Dashboard() {
               )}
             </CardContent>
           </Card>
+          </section>
 
           {/* Recommendations */}
-          <Card className="mb-8 futuristic-card">
+          <section className="mb-12">
+            <Card className="futuristic-card">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-xl">
+              <CardTitle className="flex items-center gap-2 text-2xl sm:text-3xl font-heading">
                 <CheckCircle className="w-5 h-5 text-green-400" />
                 <span className="gradient-text">Recommendations</span>
               </CardTitle>
-              <p className="text-sm text-foreground/60 mt-2">
+                        <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
                 Actionable insights to guide smarter decisions
               </p>
             </CardHeader>
@@ -1457,9 +1468,9 @@ export default function Dashboard() {
                    </tbody>
                 </table>
               </div>
-            
             </CardContent>
           </Card>
+          </section>
         </div>
       </main>
     </>
