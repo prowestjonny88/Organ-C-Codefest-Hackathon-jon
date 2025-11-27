@@ -82,3 +82,4 @@ Check the browser console to see which API is being used:
 
 The configuration automatically switches based on the hostname! 🎉
 
+

@@ -212,3 +212,4 @@ python iot_simulator.py --local --interval 5
 **All updates happen automatically - no manual refresh needed!** 🚀
 
 
+

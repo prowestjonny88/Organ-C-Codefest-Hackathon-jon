@@ -135,3 +135,4 @@ Based on the error pattern, the most likely issue is:
 
 **Solution**: Check backend logs to see the exact Prophet error message.
 
+
