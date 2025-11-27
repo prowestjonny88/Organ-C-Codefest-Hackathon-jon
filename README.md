@@ -94,100 +94,126 @@ Stores logs for:
 ## 🛠️ Tech Stack
 Backend
 
-Python
+-Python
 
-FastAPI
+-FastAPI
 
-SQLAlchemy ORM
+-SQLAlchemy ORM
 
-PostgreSQL (Render Cloud)
+-PostgreSQL (Render Cloud)
 
-Prophet (Forecasting)
+-Prophet (Forecasting)
 
-Scikit-Learn (Anomaly + Clustering)
+-Scikit-Learn (Anomaly + Clustering)
 
-Frontend (Optional)
+Frontend 
 
-TailwindCSS
+-TailwindCSS
 
-HTML/CSS
+-Vite
 
-JS (or any UI you add)
+-React 
+
+-TypeScript
+
+-JavaScript
 
 Infrastructure
 
-Render Web Service
+-Railway Web Service
 
-Render PostgreSQL Instance
+-Render PostgreSQL Instance
 
-Python IoT Simulator (local execution)
+-Python IoT Simulator 
 
 ## 📡 API Endpoints
 IoT Ingestion
+```
 POST /api/v1/iot/
+```
 
 
 Sends IoT data → anomaly detection → clustering → risk scoring → database logging.
 
 Forecasting
+```
 POST /api/v1/forecast/
+```
 
 Anomaly Detection
+```
 POST /api/v1/anomaly/
-
+```
 Risk Assessment
+```
 POST /api/v1/risk/
-
+```
 Alerts
+```
 GET /api/v1/alerts/
+```
 
 Stores
+```
 GET /api/v1/stores/
-
+```
 ## ⚙️ Installation & Setup
 1️⃣ Clone the repository
+```
 git clone https://github.com/<your-username>/<repo-name>.git
 cd <repo-name>
+```
 
 2️⃣ Create and activate a virtual environment
+```
 python -m venv venv
 source venv/bin/activate  # Mac/Linux
 venv\Scripts\activate     # Windows
+```
 
 3️⃣ Install dependencies
+```
 pip install -r requirements.txt
+```
 
 4️⃣ Set your environment variable
+```
 DATABASE_URL=<your_postgres_url>
+```
 
 5️⃣ Run the FastAPI backend
+```
 uvicorn main:app --reload
+```
 
 6️⃣ Open API docs
+```
 http://127.0.0.1:8000/docs
+```
 
 ## 🔄 IoT Simulator
 
 The project includes a Python script that sends random data to the API every 10 minutes.
 
 Run it with:
-
+```
 python iot_simulator.py
+```
 
 
 This simulates:
 
-store activity
+-store activity
 
-dept behavior
+-dept behavior
 
-weekly sales
+-weekly sales
 
-temperature
+-temperature
 
-CPI / fuel price
+-CPI / fuel price
 
-unemployment
+-unemployment
 
 ## 🧪 Model Accuracy Evaluation
 
@@ -195,57 +221,34 @@ The system evaluates:
 
 📈 Forecasting Accuracy
 
-MAE
+-MAE
 
-RMSE
+-RMSE
 
-MAPE
+-MAPE
 
-Coverage
+-Coverage
 
 🔍 Anomaly Detection Confidence
 
-Detection rate
+-Detection rate
 
-Score variance
+-Score variance
 
-Model confidence
+-Model confidence
 
 🎯 Overall Performance Score
 
 Combines:
-
+```
 70% Forecast Accuracy
 30% Anomaly Confidence
-
-## 🚨 Logs Stored in Database
-Table Name	Description
-anomaly_logs	anomaly scores for each IoT record
-cluster_logs	cluster assignments
-risk_logs	risk scores & levels
-alerts	triggered alerts
-## 🌟 Screenshots (Optional)
-
-(Add your dashboard images, API demo videos, or architecture diagrams)
+```
 
 ## 📌 Future Improvements
-
-User authentication (login page)
 
 Real IoT hardware support
 
 More ML models
 
-KPI dashboard UI
-
 Automated email/SMS alerts
-
-## 🧑‍💻 Contributors
-
-Your Name
-
-(Add teammates if any)
-
-## 📄 License
-
-MIT License (or any license you prefer)
