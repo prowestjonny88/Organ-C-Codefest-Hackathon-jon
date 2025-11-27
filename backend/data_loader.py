@@ -17,11 +17,24 @@ def load_raw_data_cached() -> pd.DataFrame:
 
     return df
 
-def load_raw_data() -> pd.DataFrame:
-    return load_raw_data_cached().copy()
+def load_raw_data(copy: bool = False) -> pd.DataFrame:
+    """
+    Load raw data from CSV.
+    
+    Args:
+        copy: If True, return a copy. If False, return a view (default).
+              Only use copy=True when you need to modify the DataFrame.
+    
+    Returns:
+        DataFrame with the raw data
+    """
+    if copy:
+        return load_raw_data_cached().copy()
+    return load_raw_data_cached()
 
 def get_time_series(store_id: int | None = None) -> pd.DataFrame:
-    df = load_raw_data()
+    # Need copy since we're modifying (renaming, sorting)
+    df = load_raw_data(copy=True)
 
     if store_id is not None:
         df = df[df["Store"] == store_id]
