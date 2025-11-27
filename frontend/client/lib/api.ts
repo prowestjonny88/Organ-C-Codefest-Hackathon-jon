@@ -5,12 +5,21 @@ import { demoRecommendations } from "./demo-data";
 // ============================================
 // API CONFIGURATION
 // ============================================
-// Force production API or check if we're in development
-// Set FORCE_PRODUCTION to true to always use Render backend
-const FORCE_PRODUCTION = true;
+// Automatically detects environment:
+// - Local development: Uses localhost backend when running on localhost/127.0.0.1
+// - Production deployment: Uses Render backend when deployed
+// 
+// To force production API (e.g., testing production from localhost):
+// Set FORCE_PRODUCTION = true
+const FORCE_PRODUCTION = false;
 
-const isDevelopment = !FORCE_PRODUCTION && typeof window !== "undefined" && 
+// Detect if we're in development mode
+// Checks if running on localhost/127.0.0.1 (local dev server)
+const isLocalDev = typeof window !== "undefined" && 
   (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+
+// Determine if we should use development or production API
+const isDevelopment = !FORCE_PRODUCTION && isLocalDev;
 
 // Backend API base URL
 // Development: http://localhost:8000 (backend running locally)

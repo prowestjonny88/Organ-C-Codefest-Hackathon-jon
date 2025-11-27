@@ -194,17 +194,6 @@ export default function Dashboard() {
   }, [dataLoaded, queryClient]);
 
   // Query backend for API-driven values (fallback to demo data in fetch functions)
-<<<<<<< Updated upstream
-  const metricsQuery = useQuery({ queryKey: ["metrics"], queryFn: fetchMetrics, staleTime: 60_000 });
-  const inventoriesQuery = useQuery({ queryKey: ["inventories"], queryFn: fetchInventories, staleTime: 60_000 });
-  const forecastQuery = useQuery({ queryKey: ["forecast", forecastStoreFilter, forecastPeriods], queryFn: () => fetchForecast(forecastStoreFilter ? parseInt(forecastStoreFilter) : undefined, forecastPeriods), staleTime: 60_000 });
-  const recommendationsQuery = useQuery({ queryKey: ["recommendations"], queryFn: () => fetchRecommendations(), staleTime: 60_000 });
-  const kpiQuery = useQuery({ queryKey: ["kpi"], queryFn: () => fetchKPIMetrics(), staleTime: 60_000 });
-  const anomaliesQuery = useQuery({ queryKey: ["anomalies"], queryFn: () => fetchAnomalies(), staleTime: 60_000 });
-  // Note: riskQuery and alertsQuery require POST data, not used in initial render
-  // const riskQuery = useQuery({ queryKey: ["risk"], queryFn: () => fetchRiskAnalysis(), staleTime: 60_000 });
-  // const alertsQuery = useQuery({ queryKey: ["alerts"], queryFn: () => fetchAlerts(), staleTime: 60_000 });
-=======
   // Reduced staleTime for real-time updates when using backend data (not CSV)
   const staleTimeForRealtime = dataLoaded ? 60_000 : 5_000; // 5 seconds when using backend data, 60s for CSV
   const metricsQuery = useQuery({ queryKey: ["metrics"], queryFn: fetchMetrics, staleTime: staleTimeForRealtime });
@@ -278,7 +267,6 @@ export default function Dashboard() {
       console.error("[Dashboard] Backtest query error:", backtestQuery.error);
     }
   }, [backtestQuery.data, backtestQuery.error]);
->>>>>>> Stashed changes
 
   // Choose data to display: uploaded (local) when available; otherwise API/demo data
   const displayMetrics = metrics ?? metricsQuery.data ?? null;
@@ -821,8 +809,8 @@ export default function Dashboard() {
                 </div>
               </div>
               {selectedData.filter((d) => d.anomalyFlag).length > 0 && (
-                <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                  <p className="text-sm font-semibold text-yellow-900 mb-2">
+                <div className="mt-6 p-4 bg-yellow-500/20 border border-yellow-500/30 rounded-lg glass-card">
+                  <p className="text-sm font-semibold text-yellow-400 mb-2">
                     ⚠️ Anomalies Detected
                   </p>
                   <ul className="space-y-1">
@@ -830,7 +818,7 @@ export default function Dashboard() {
                       .filter((d) => d.anomalyFlag && d.anomalyReason)
                       .slice(0, 3)
                       .map((record, idx) => (
-                        <li key={idx} className="text-xs text-yellow-800">
+                        <li key={idx} className="text-xs text-yellow-300">
                           {record.date}: {record.anomalyReason}
                         </li>
                       ))}
@@ -946,19 +934,19 @@ export default function Dashboard() {
                   {realtimeAlerts.map((alert: any) => (
                     <div
                       key={alert.id}
-                      className="p-4 border-2 border-red-200 bg-red-50 rounded-lg"
+                      className="p-4 border-2 border-red-500/30 bg-red-500/20 rounded-lg glass-card"
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <p className="font-semibold text-red-900">{alert.message}</p>
-                          <p className="text-xs text-red-700 mt-1">
+                          <p className="font-semibold text-red-400">{alert.message}</p>
+                          <p className="text-xs text-red-300 mt-1">
                             Store: {alert.store} | Dept: {alert.dept} | Risk Score: {alert.risk_score}
                           </p>
-                          <p className="text-xs text-red-600 mt-1">
+                          <p className="text-xs text-red-400/80 mt-1">
                             {new Date(alert.timestamp).toLocaleString()}
                           </p>
                         </div>
-                        <span className="text-xs font-semibold px-3 py-1 bg-red-200 text-red-800 rounded-full">
+                        <span className="text-xs font-semibold px-3 py-1 bg-red-500/30 text-red-300 border border-red-500/50 rounded-full">
                           HIGH RISK
                         </span>
                       </div>
@@ -969,8 +957,8 @@ export default function Dashboard() {
 
               {/* Show latest IoT data points */}
               {!dataLoaded && iotDataPoints.length > 0 && (
-                <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-sm font-semibold text-blue-900 mb-2">
+                <div className="mb-6 p-4 bg-blue-500/20 border border-blue-500/30 rounded-lg glass-card">
+                  <p className="text-sm font-semibold text-blue-400 mb-2">
                     📊 Latest IoT Data Points
                   </p>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
@@ -1039,15 +1027,15 @@ export default function Dashboard() {
                             Store: {item.storeId} | Cluster: {item.clusterId} | Risk Level: {item.level}
                           </p>
                         </div>
-                        <span
-                          className={`text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap ml-4 ${
-                            item.level === "HIGH"
-                              ? "bg-red-100 text-red-800"
-                              : item.level === "MEDIUM"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-green-100 text-green-800"
-                          }`}
-                        >
+                         <span
+                           className={`text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap ml-4 border ${
+                             item.level === "HIGH"
+                               ? "bg-red-500/20 text-red-400 border-red-500/30"
+                               : item.level === "MEDIUM"
+                                 ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
+                                 : "bg-green-500/20 text-green-400 border-green-500/30"
+                           }`}
+                         >
                           {item.level}
                         </span>
                       </div>
@@ -1082,30 +1070,30 @@ export default function Dashboard() {
                   <span className="ml-3 text-muted-foreground">Calculating accuracy metrics...</span>
                 </div>
               ) : accuracyQuery.error ? (
-                <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-sm text-red-900">
+                <div className="p-4 bg-red-500/20 border border-red-500/30 rounded-lg glass-card">
+                  <p className="text-sm text-red-400">
                     Failed to load accuracy metrics. Please try again later.
                   </p>
                 </div>
               ) : accuracyQuery.data ? (
                 <div className="space-y-6">
                   {/* Overall Confidence Score */}
-                  <div className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+                  <div className="p-6 bg-gradient-to-r from-primary/20 via-accent/20 to-secondary/20 rounded-lg border border-primary/30 glass-card">
                     <div className="flex items-center justify-between mb-4">
                       <div>
-                        <p className="text-sm font-medium text-blue-900 mb-1">Overall Model Confidence</p>
-                        <p className="text-3xl font-bold text-blue-700">
+                        <p className="text-sm font-medium text-foreground mb-1">Overall Model Confidence</p>
+                        <p className="text-3xl font-bold gradient-text">
                           {accuracyQuery.data.overall_confidence.toFixed(1)}%
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="text-xs text-blue-700 mb-1">Forecast: {accuracyQuery.data.forecast_confidence.toFixed(1)}%</p>
-                        <p className="text-xs text-blue-700">Anomaly: {accuracyQuery.data.anomaly_confidence.toFixed(1)}%</p>
+                        <p className="text-xs text-foreground/80 mb-1">Forecast: {accuracyQuery.data.forecast_confidence.toFixed(1)}%</p>
+                        <p className="text-xs text-foreground/80">Anomaly: {accuracyQuery.data.anomaly_confidence.toFixed(1)}%</p>
                       </div>
                     </div>
-                    <div className="w-full bg-blue-200 rounded-full h-3">
+                    <div className="w-full bg-primary/20 rounded-full h-3">
                       <div 
-                        className="bg-blue-600 h-3 rounded-full transition-all duration-500"
+                        className="bg-gradient-to-r from-primary to-secondary h-3 rounded-full transition-all duration-500"
                         style={{ width: `${accuracyQuery.data.overall_confidence}%` }}
                       />
                     </div>
@@ -1281,15 +1269,15 @@ export default function Dashboard() {
                             />
                           </ComposedChart>
                         </ResponsiveContainer>
-                        <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                          <p className="text-xs text-blue-900">
+                        <div className="mt-4 p-3 bg-blue-500/20 border border-blue-500/30 rounded-lg glass-card">
+                          <p className="text-xs text-blue-400">
                             <strong>Store {(backtestQuery.data as BacktestComparisonResult).store_id} Backtest Results:</strong> 
                             {" "}MAE: {(backtestQuery.data as BacktestComparisonResult).metrics.mae.toFixed(2)} | 
                             {" "}RMSE: {(backtestQuery.data as BacktestComparisonResult).metrics.rmse.toFixed(2)} | 
                             {" "}MAPE: {(backtestQuery.data as BacktestComparisonResult).metrics.mape.toFixed(2)}%
                           </p>
-                          <p className="text-xs text-blue-700 mt-1">
-                            This comparison uses the last 12 weeks of historical data to validate our model's accuracy.
+                          <p className="text-xs text-blue-300 mt-1">
+                            This comparison uses the last 6 weeks of historical data to validate our model's accuracy.
                           </p>
                         </div>
                       </div>
@@ -1356,42 +1344,42 @@ export default function Dashboard() {
                             />
                           </ComposedChart>
                         </ResponsiveContainer>
-                        <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                          <p className="text-xs text-blue-900">
+                        <div className="mt-4 p-3 bg-blue-500/20 border border-blue-500/30 rounded-lg glass-card">
+                          <p className="text-xs text-blue-400">
                             <strong>Store {(backtestQuery.data as any).store_results[0].store_id} Backtest Results:</strong> 
                             {" "}MAE: {(backtestQuery.data as any).store_results[0].metrics.mae.toFixed(2)} | 
                             {" "}RMSE: {(backtestQuery.data as any).store_results[0].metrics.rmse.toFixed(2)} | 
                             {" "}MAPE: {(backtestQuery.data as any).store_results[0].metrics.mape.toFixed(2)}%
                           </p>
-                          <p className="text-xs text-blue-700 mt-1">
-                            This comparison uses the last 12 weeks of historical data to validate our model's accuracy.
+                          <p className="text-xs text-blue-300 mt-1">
+                            This comparison uses the last 6 weeks of historical data to validate our model's accuracy.
                             {(backtestQuery.data as any).stores_evaluated > 1 && ` (Showing 1 of ${(backtestQuery.data as any).stores_evaluated} stores evaluated)`}
                           </p>
                         </div>
                       </div>
                     ) : backtestQuery.isLoading ? (
-                      <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                      <div className="p-4 bg-blue-500/20 border border-blue-500/30 rounded-lg glass-card">
                         <div className="flex items-center gap-3">
-                          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600" />
+                          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
                           <div>
-                            <p className="text-sm font-medium text-blue-900">
+                            <p className="text-sm font-medium text-blue-400">
                               Generating comparison graph...
                             </p>
-                            <p className="text-xs text-blue-700 mt-1">
+                            <p className="text-xs text-blue-300 mt-1">
                               This may take 30-60 seconds (training Prophet model on Walmart data)
                             </p>
                           </div>
                         </div>
                       </div>
                     ) : backtestQuery.error ? (
-                      <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                        <p className="text-sm font-medium text-yellow-900 mb-2">
+                      <div className="p-4 bg-yellow-500/20 border border-yellow-500/30 rounded-lg glass-card">
+                        <p className="text-sm font-medium text-yellow-400 mb-2">
                           ⚠️ Backtest comparison unavailable
                         </p>
-                        <p className="text-xs text-yellow-700">
+                        <p className="text-xs text-yellow-300">
                           Error: {backtestQuery.error instanceof Error ? backtestQuery.error.message : 'Unknown error'}
                         </p>
-                        <p className="text-xs text-yellow-600 mt-2">
+                        <p className="text-xs text-yellow-400/80 mt-2">
                           Check backend logs for details. Ensure Walmart_Sales.csv has sufficient data (at least 32 weeks).
                         </p>
                       </div>
@@ -1449,33 +1437,24 @@ export default function Dashboard() {
                       <th className="text-left py-3 px-4 font-semibold text-foreground">Date</th>
                     </tr>
                   </thead>
-                  <tbody>
-<<<<<<< Updated upstream
-                    {(recommendationsQuery.data || []).map((rec: any, index: number) => (
-                      <tr key={`rec-${index}-${rec.storeId}`} className="border-b border-border hover:bg-slate-50 transition-colors">
-                        <td className="py-3 px-4 font-semibold">{rec.title}</td>
-                        <td className="py-3 px-4 text-foreground/60">{rec.details}</td>
-                        <td className="py-3 px-4">{rec.storeId ?? "-"}</td>
-                        <td className="py-3 px-4">{rec.date ?? "-"}</td>
-=======
-                    {Array.isArray(recommendationsQuery.data) && recommendationsQuery.data.length > 0 ? (
-                      recommendationsQuery.data.map((rec: any) => (
-                        <tr key={rec.id || rec.title} className="border-b border-border/50 hover:bg-primary/5 transition-colors">
-                          <td className="py-3 px-4 font-semibold text-foreground">{rec.title}</td>
-                          <td className="py-3 px-4 text-foreground/70">{rec.details}</td>
-                          <td className="py-3 px-4 text-foreground">{rec.storeId ?? "-"}</td>
-                          <td className="py-3 px-4 text-foreground">{rec.date ?? "-"}</td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan={4} className="py-8 text-center text-muted-foreground">
-                          No recommendations available
-                        </td>
->>>>>>> Stashed changes
-                      </tr>
-                    )}
-                  </tbody>
+                   <tbody>
+                     {Array.isArray(recommendationsQuery.data) && recommendationsQuery.data.length > 0 ? (
+                       recommendationsQuery.data.map((rec: any) => (
+                         <tr key={rec.id || rec.title} className="border-b border-border/50 hover:bg-primary/5 transition-colors">
+                           <td className="py-3 px-4 font-semibold text-foreground">{rec.title}</td>
+                           <td className="py-3 px-4 text-foreground/70">{rec.details}</td>
+                           <td className="py-3 px-4 text-foreground">{rec.storeId ?? "-"}</td>
+                           <td className="py-3 px-4 text-foreground">{rec.date ?? "-"}</td>
+                         </tr>
+                       ))
+                     ) : (
+                       <tr>
+                         <td colSpan={4} className="py-8 text-center text-muted-foreground">
+                           No recommendations available
+                         </td>
+                       </tr>
+                     )}
+                   </tbody>
                 </table>
               </div>
             
